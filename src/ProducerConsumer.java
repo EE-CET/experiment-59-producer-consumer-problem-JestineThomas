@@ -3,6 +3,7 @@ class SharedResource {
     boolean available = false;
 
     synchronized void put(int item) {
+
         while (available) {
             try {
                 wait();
@@ -11,13 +12,17 @@ class SharedResource {
                 System.out.println(e);
             }
         }
+
         this.item = item;
         available = true;
 
         System.out.println("Produced: " + item);
+
         notify();
     }
+
     synchronized void get() {
+
         while (!available) {
             try {
                 wait();
@@ -26,6 +31,7 @@ class SharedResource {
                 System.out.println(e);
             }
         }
+
         System.out.println("Consumed: " + item);
         available = false;
 
@@ -39,6 +45,7 @@ class Producer extends Thread {
     Producer(SharedResource resource) {
         this.resource = resource;
     }
+
     public void run() {
         for (int i = 1; i <= 5; i++) {
             resource.put(i);
@@ -52,7 +59,6 @@ class Consumer extends Thread {
     Consumer(SharedResource resource) {
         this.resource = resource;
     }
-
     public void run() {
         for (int i = 1; i <= 5; i++) {
             resource.get();
@@ -62,5 +68,10 @@ class Consumer extends Thread {
 
 public class ProducerConsumer {
     public static void main(String[] args) {
-
-        SharedResource obj = new SharedResour
+        SharedResource obj = new SharedResource();
+        Producer p = new Producer(obj);
+        Consumer c = new Consumer(obj);
+        p.start();
+        c.start();
+    }
+}
